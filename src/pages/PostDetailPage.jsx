@@ -4,7 +4,9 @@ import { formatDate, sanitizeContent } from "../utils/utils";
 export default function PostsPage({ posts }) {
   const { id } = useParams();
 	const postId = parseInt(id);
+	if (!posts || posts.length === 0) return <p className="text-center mt-10">読み込み中...</p>;
 	const post = posts.find(post => post.id === postId);
+	if (!post) return <p className="text-center mt-10">記事が見つかりませんでした。</p>;
   return (
 		<section className="max-w-[800px] w-10/12 mx-auto mt-10 space-y-6">
 			<figure>
