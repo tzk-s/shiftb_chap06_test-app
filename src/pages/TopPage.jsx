@@ -1,12 +1,10 @@
-import Header from "../components/layout/Header";
-import PostList from "../components/PostList";
-import {posts} from "../data/post"
+import { posts } from "../data/post";
+import PostsList from "../components/PostList";
 
 export default function TopPage() {
   return (
     <>
-			<Header />
-      <PostList posts={posts} />
+      <PostsList posts={posts} />
     </>
   );
 }
