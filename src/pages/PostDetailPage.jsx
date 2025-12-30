@@ -1,35 +1,45 @@
 import { useParams } from "react-router-dom";
-import { formatDate, sanitizeContent } from "../utils/utils";
+import PostDetail from "../components/posts/PostDetail";
+import { useEffect, useState } from "react";
 
-export default function PostsPage({ posts }) {
+export default function PostDetailPage() {
   const { id } = useParams();
-	const postId = parseInt(id);
-	if (!posts || posts.length === 0) return <p className="text-center mt-10">読み込み中...</p>;
-	const post = posts.find(post => post.id === postId);
-	if (!post) return <p className="text-center mt-10">記事が見つかりませんでした。</p>;
+  const [post, setPost] = useState(null);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetcher = async () => {
+      try {
+        if (!id) return;
+        const res = await fetch(`https://1hmfpsvto6.execute-api.ap-northeast-1.amazonaws.com/dev/posts/${id}`);
+        if (!res.ok) {
+          if (res.status === 404) throw new Error("404");
+          throw new Error("データの取得に失敗しました。");
+        }
+        const data = await res.json();
+        setPost(data.post);
+      } catch (error) {
+        console.error("エラー詳細:", error);
+        if (error.message === "404") {
+          setError("お探しの記事は見つかりませんでした。");
+        } else if (!navigator.onLine) {
+          setError("インターネットに接続されていません。");
+        } else {
+          setError("一時的なエラーです。お手数ですが、しばらく待ってからページを再度更新してください。");
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetcher();
+  }, [id]);
+  if (isLoading) return <p className="text-center mt-10">読み込み中...</p>;
+  if (error) return <p className="text-center mt-10 text-red-500">{error}</p>;
+  if (!post) return <p className="text-center mt-10">記事が見つかりません。</p>;
   return (
-		<section className="max-w-[800px] w-10/12 mx-auto mt-10 space-y-6">
-			<figure>
-				<img src={post.thumbnailUrl} alt="" />
-			</figure>
-			<div className="flex justify-between items-start">
-				<div>
-					<time dateTime={post.createdAt} className="text-[0.8rem] text-[#888]">
-						{formatDate(post.createdAt)}
-					</time>
-				</div>
-				<div className="flex gap-2 flex-wrap justify-end">
-					{post.categories.map(category => (
-						<span key={category} className="border border-[#ccc] text-[#06c] rounded-sm px-2 py-1 text-[0.8rem]">
-							{category}
-						</span>
-					))}
-				</div>
-			</div>
-			<h1 className="text-[1.5rem] mt-2 text-gray-800">
-				{`APIで取得した${post.title}`}
-			</h1>
-			<div className="text-[1rem] mt-2 text-gray-600" dangerouslySetInnerHTML={{ __html: sanitizeContent(post.content) }} />
-    </section>
+    <>
+      <PostDetail post={post} />
+    </>
   );
 }

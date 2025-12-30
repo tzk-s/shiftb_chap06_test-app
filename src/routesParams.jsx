@@ -8,7 +8,7 @@ const routesParams = createBrowserRouter(
   createRoutesFromElements(
     <Route element={<Layout />}>
       <Route index element={<TopPage />} />
-      <Route path="/posts/:id" element={<PostDetailPage posts={posts} />} />
+      <Route path="/posts/:id" element={<PostDetailPage />} />
     </Route>
   )
 );
