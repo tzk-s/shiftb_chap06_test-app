@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { formatDate, sanitizeContent } from '../utils/utils';
+import { formatDate, sanitizeContent } from '../../utils/utils';
 
 export default function PostList({ posts }) {
   return (
